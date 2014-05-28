@@ -2,7 +2,9 @@
 var express   = require('express')
   , rawBody   = require('raw-body')
   , fs        = require('fs')
+  , path      = require('path')
   , extend    = require('extend')
+  , mkdirp    = require('mkdirp')
   , pkg       = require('./package.json')
   , dbs       = {}
   , uuids     = require('./uuids')
@@ -15,6 +17,19 @@ function isPouchError(obj) {
   return obj.error && obj.error === true;
 }
 
+var pouchPath;
+var leveldown;
+
+module.exports.setPath = function (filepath) {
+  pouchPath = path.resolve(filepath);
+  allDbs.setPath(pouchPath);
+  mkdirp.sync(pouchPath);
+};
+
+module.exports.setBackend = function (backend) {
+  leveldown = backend;
+  allDbs.setBackend(backend);
+};
 
 app.use('/js', express.static(__dirname + '/fauxton/js'));
 app.use('/css', express.static(__dirname + '/fauxton/css'));
@@ -95,7 +110,7 @@ app.get('/_uuids', function (req, res, next) {
 
 // List all databases.
 app.get('/_all_dbs', function (req, res, next) {
-  allDbs(function (err, response) {
+  allDbs.allDbs(function (err, response) {
     if (err) res.send(500, Pouch.UNKNOWN_ERROR);
     res.send(200, response);
   });
@@ -160,6 +175,12 @@ app.get('/_active_tasks', function (req, res, next) {
 // Create a database.
 app.put('/:db', function (req, res, next) {
   var name = encodeURIComponent(req.params.db);
+
+  var fullName = name;
+  if (pouchPath) {
+    fullName = path.join(pouchPath, name);
+  }
+
   if (name in dbs) {
     return res.send(412, {
       'error': 'file_exists',
@@ -167,7 +188,11 @@ app.put('/:db', function (req, res, next) {
     });
   }
 
-  Pouch(name, function (err, db) {
+  var opts = {};
+  if (leveldown) {
+    opts.db = leveldown;
+  }
+  new Pouch(fullName, opts, function (err, db) {
     if (err) return res.send(412, err);
     dbs[name] = db;
     var loc = req.protocol
@@ -202,24 +227,40 @@ app.delete('/:db', function (req, res, next) {
     }
 
     // Check for the data stores, and rebuild a Pouch instance if able
-    fs.stat(name, function (err, stats) {
-      if (err && err.code == 'ENOENT') {
-        return res.send(404, {
-          status: 404,
-          error: 'not_found',
-          reason: 'no_db_file'
-        });
-      }
+    var fullName = pouchPath ? path.join(pouchPath, name) : name;
 
-      if (stats.isDirectory()) {
-        Pouch(name, function (err, db) {
-          if (err) return res.send(412, err);
-          dbs[name] = db;
-          req.db = db;
-          return next();
-        });
+    function createPouch() {
+      var opts = {};
+      if (leveldown) {
+        opts.db = leveldown;
       }
-    });
+      new Pouch(fullName, opts, function (err, db) {
+        if (err) return res.send(412, err);
+        dbs[name] = db;
+        req.db = db;
+        return next();
+      });
+    }
+
+    if (!leveldown) {
+      // levelup adapter, so check file directory
+      fs.stat(fullName, function (err, stats) {
+        if (err && err.code == 'ENOENT') {
+          return res.send(404, {
+            status: 404,
+            error: 'not_found',
+            reason: 'no_db_file'
+          });
+        }
+
+        if (stats.isDirectory()) {
+          createPouch();
+        }
+      });
+    } else {
+      // in-memory, no need to check
+      createPouch();
+    }
   });
 });
 
