@@ -18,6 +18,7 @@ which is primarily used as a quick-and-dirty drop-in replacement for CouchDB in 
 
 ```bash
 $ npm install express-pouchdb
+$ npm install pouchdb
 ```
 
 ## Example Usage
@@ -26,12 +27,11 @@ Here's a sample Express app, which we'll name `app.js`.
 
 ```javascript
 var express = require('express')
+  , PouchDB = require('pouchdb')
   , app     = express();
 
-app.configure(function () {
-  app.use(express.logger('tiny'));
-  app.use('/db', require('express-pouchdb'));
-});
+app.use(express.logger('tiny'));
+app.use('/db', require('express-pouchdb')(PouchDB));
 
 app.listen(3000);
 ```
@@ -54,18 +54,53 @@ you can use `express.urlencoded()` and `express.multipart()` alongside the **exp
 and you should find the results to be the same as you would have expected with `express.bodyParser()`.
 
 ```javascript
-app.configure(function () {
-  app.use(express.urlencoded());
-  app.use(express.multipart());
-  app.use(require('express-pouchdb'));
-});
+app.use(express.urlencoded());
+app.use(express.multipart());
+app.use(require('express-pouchdb'));
 ```
+
+## Using PouchDB simultaneously
+
+Because express-pouchdb allows you to set your own `PouchDB` object, you can add express-pouchdb to your existing Node-based PouchDB application with no conflicts:
+
+```js
+var express = require('express')
+  , PouchDB = require('pouchdb')
+  , app     = express();
+
+app.use('/db', require('express-pouchdb')(PouchDB));
+
+var myPouch = new PouchDB('foo');
+
+// your Pouch is now available via HTTP at /db/foo
+
+myPouch.post({hello: 'world!'}).then(function (success) {
+}).catch(function (err) {
+})
+
+// and this hello world doc will be there as well!
+```
+
+## Setting PouchDB defaults
+
+The [PouchDB.defaults() API](http://pouchdb.com/api.html#defaults) can be very helpful for setting some defaults for your app.  For instance, you could make a purely [MemDOWN](https://github.com/rvagg/memdown)-based Pouch server by doing:
+
+```js
+var express = require('express')
+  , PouchDB = require('pouchdb')
+  , app     = express();
+
+var InMemPouchDB = PouchDB.defaults({db: require('memdown')});
+
+app.use('/db', require('express-pouchdb')(InMemPouchDB));
+```
+
 
 ## Contributing
 
 Want to help me make this thing awesome? Great! Here's how you should get started.
 
-1. Because PouchDB is still developing so rapidly, you'll want to clone `git@github.com:daleharvey/pouchdb.git`, and run `npm link` from the root folder of your clone.
+1. Because PouchDB is still developing so rapidly, you'll want to clone `git@github.com:pouchdb/pouchdb.git`, and run `npm link` from the root folder of your clone.
 2. Fork **express-pouchdb**, and clone it to your local machine.
 3. From the root folder of your clone run `npm link pouchdb` to install PouchDB from your local repository from Step 1.
 4. `npm install`
@@ -78,6 +113,7 @@ I haven't defined a formal styleguide, so please take care to maintain the exist
 A huge thanks goes out to all of the following people for helping me get this to where it is now.
 
 * Dale Harvey ([@daleharvey](https://github.com/daleharvey))
+* Nolan Lawson ([@nolanlawson](https://github.com/nolanlawson))
 * Ryan Ramage ([@ryanramage](https://github.com/ryanramage))
 * Garren Smith ([@garrensmith](https://github.com/garrensmith))
 * ([@copongcopong](https://github.com/copongcopong))
