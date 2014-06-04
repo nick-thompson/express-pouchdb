@@ -167,7 +167,10 @@ app.put('/:db', function (req, res, next) {
     });
   }
 
-  Pouch(name, function (err, db) {
+  var pouchOpts = app.get('pouchOptions') || {}
+  var dataDir = app.get('dataDirectory') || process.cwd()
+  var path = dataDir + '/' + name
+  Pouch(path, pouchOpts, function (err, db) {
     if (err) return res.send(412, err);
     dbs[name] = db;
     var loc = req.protocol
