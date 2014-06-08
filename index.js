@@ -103,7 +103,10 @@ app.use(function (req, res, next) {
 
 // Query design document rewrite handler
 app.use(function (req, res, next) {
-  var match = /\/(.*?)\/_design\/(.*?)\/_rewrite(.*)/.exec(req.url);
+  // Prefers regex over setting the first argument of app.use(), because
+  // the last makes req.url relative, which in turn makes most rewrites
+  // impossible.
+  var match = /\/([^\/]*)\/_design\/([^\/]*)\/_rewrite(.*)/.exec(req.url);
   if (!match) {
     return next();
   }
