@@ -367,8 +367,7 @@ app.get('/:db/_changes', function (req, res, next) {
   if (req.query.feed === 'continuous' || req.query.feed === 'longpoll') {
     var heartbeatInterval;
     // 60000 is the CouchDB default
-    var heartbeat = (typeof req.query.heartbeat === 'number') ? req.query.heartbeat : 60000;
-    req.socket.setTimeout(86400 * 1000);
+    var heartbeat = (typeof req.query.heartbeat === 'number') ? req.query.heartbeat : 6000;
 
     var written = false;
     heartbeatInterval = setInterval(function () {
