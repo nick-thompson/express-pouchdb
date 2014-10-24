@@ -64,7 +64,7 @@ $ node app.js &
 
   - Your app: [http://localhost:3000/](http://localhost:3000/)
   - Pouchdb server API: [http://localhost:3000/express-pouchdb/](http://localhost:3000/express-pouchdb/)
-  - Fauxton admin UI: [http://localhost:3000/express-pouchdb/_utils_](http://localhost:3000/express-pouchdb/_utils_)
+  - Fauxton admin UI: [http://localhost:3000/express-pouchdb/_utils](http://localhost:3000/express-pouchdb/_utils_)
 
 To interact with the PouchDB API directly:
 
