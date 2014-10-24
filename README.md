@@ -32,20 +32,22 @@ var express = require('express')
   ;
 
 app.use(logger('tiny'));
+
+app.use('/express-pouchdb', require('express-pouchdb')(PouchDB));
+
 app.get('/', function(req, res, next) { 
   res.send('Welcome Traveler!  <a href="/express-pouchdb/_utils">Fauxton?</a>');
 });
-app.use('/express-pouchdb', require('express-pouchdb')(PouchDB));
 
 app.listen(3000);
 
 ```
 
-Now we can run this little guy and find each of `express-pouch`'s routes at the `/db` prefix.
+Now we can run this little guy and find each of `express-pouch`'s routes at the `/express-pouchdb` prefix.
 
 ```bash
 $ node app.js &
-$ curl http://localhost:3000/db/
+$ curl http://localhost:3000/express-pouchdb/
 GET / 200 56 - 7 ms
 {
   "express-pouchdb": "Welcome!",
@@ -74,12 +76,12 @@ var express = require('express')
   , app     = express()
   , PouchDB = require('pouchdb');
 
-app.use('/db', require('express-pouchdb')(PouchDB));
+app.use('/express-pouchdb', require('express-pouchdb')(PouchDB));
 
 var myPouch = new PouchDB('foo');
 
 // myPouch is now modifiable in your own code, and it's also
-// available via HTTP at /db/foo
+// available via HTTP at /express-pouchdb/foo
 ```
 
 ### PouchDB defaults
@@ -93,7 +95,7 @@ For instance, if you want to use an in-memory [MemDOWN](https://github.com/rvagg
 ```js
 var InMemPouchDB = PouchDB.defaults({db: require('memdown')});
 
-app.use('/db', require('express-pouchdb')(InMemPouchDB));
+app.use('/express-pouchdb', require('express-pouchdb')(InMemPouchDB));
 
 var myPouch = new InMemPouchDB('foo');
 ```
@@ -103,7 +105,7 @@ Similarly, if you want to place all database files in a folder other than the `p
 ```js
 var TempPouchDB = PouchDB.defaults({prefix: '/tmp/my-temp-pouch/'});
 
-app.use('/db', require('express-pouchdb')(TempPouchDB));
+app.use('/express-pouchdb', require('express-pouchdb')(TempPouchDB));
 
 var myPouch = new TempPouchDB('foo');
 ```
@@ -151,6 +153,12 @@ For commit message style guidelines, please refer to [PouchDB CONTRIBUTING.md](h
 ### Fauxton
 
 The custom Fauxton theme, with the PouchDB Server name and logo, are kept [in a Fauxton fork](https://github.com/nolanlawson/couchdb-fauxton) for the time being.
+
+While `express-pouchdb` can be loaded at other URL's in your application, the Fauxton admin app [may not work](https://github.com/pouchdb/express-pouchdb/issues/116).
+
+```javascript
+app.use('/some-other-url', require('express-pouchdb')(PouchDB));  // Yeay!  But no Fauxton
+```
 
 ## Contributors
 
