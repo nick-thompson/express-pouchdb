@@ -54,18 +54,19 @@ app.listen(3000);
 
 #### 3) Run your app
 
+Now we can run this little guy.
+
 ```bash
 $ node app.js &
 ```
 
-#### 4) Test it
-Now we can run this little guy.
+#### 4) And Test it
 
-  - Your app: [](http://localhost:3000/)
-  - Pouchdb server API: (http://localhost:3000/express-pouchdb/)
+  - Your app: [http://localhost:3000/](http://localhost:3000/)
+  - Pouchdb server API: [http://localhost:3000/express-pouchdb/](http://localhost:3000/express-pouchdb/)
   - Fauxton admin UI: [http://localhost:3000/express-pouchdb/_utils_](http://localhost:3000/express-pouchdb/_utils_)
 
-To interact with the PouchDB server API directly:
+To interact with the PouchDB API directly:
 
 ```bash
 $ curl http://localhost:3000/express-pouchdb/
