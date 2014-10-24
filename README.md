@@ -17,7 +17,7 @@ which is primarily used as a quick-and-dirty drop-in replacement for CouchDB in 
 ## Installation
 
 ```bash
-$ npm express-pouchdb
+$ npm install express-pouchdb
 ```
 
 ## Example Usage
@@ -25,6 +25,7 @@ $ npm express-pouchdb
 Here's a sample Express app, 
 
 #### 1) Setup your app
+
 ```bash
 npm install express-pouchdb express pouchdb morgan
 ```
