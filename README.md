@@ -31,8 +31,11 @@ var express = require('express')
   , logger  = require('morgan')
   ;
 
-app.use(logger("tiny"));
-app.use('/db', require('express-pouchdb')(PouchDB));
+app.use(logger('tiny'));
+app.get('/', function(req, res, next) { 
+  res.send('Welcome Traveler!  <a href="/express-pouchdb/_utils">Fauxton?</a>');
+});
+app.use('/express-pouchdb', require('express-pouchdb')(PouchDB));
 
 app.listen(3000);
 
