@@ -17,7 +17,7 @@ which is primarily used as a quick-and-dirty drop-in replacement for CouchDB in 
 ## Installation
 
 ```bash
-$ npm install express-pouchdb
+$ npm install express express-pouchdb pouchdb morgan
 ```
 
 ## Example Usage
@@ -27,12 +27,15 @@ Here's a sample Express app, which we'll name `app.js`.
 ```javascript
 var express = require('express')
   , app     = express()
-  , PouchDB = require('pouchdb');
+  , PouchDB = require('pouchdb')
+  , logger  = require('morgan')
+  ;
 
-app.use(express.logger('tiny'));
+app.use(logger("tiny"));
 app.use('/db', require('express-pouchdb')(PouchDB));
 
 app.listen(3000);
+
 ```
 
 Now we can run this little guy and find each of `express-pouch`'s routes at the `/db` prefix.
