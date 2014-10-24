@@ -17,12 +17,19 @@ which is primarily used as a quick-and-dirty drop-in replacement for CouchDB in 
 ## Installation
 
 ```bash
-$ npm install express express-pouchdb pouchdb morgan
+$ npm express-pouchdb
 ```
 
 ## Example Usage
 
-Here's a sample Express app, which we'll name `app.js`.
+Here's a sample Express app, 
+
+#### 1) Setup your app
+```bash
+npm install express-pouchdb express pouchdb morgan
+```
+
+#### 2) Write your app `app.js`.
 
 ```javascript
 var express = require('express')
@@ -33,20 +40,40 @@ var express = require('express')
 
 app.use(logger('tiny'));
 
+// Load express-pouchdb server at /express-pouchdb
+//   Fauxton Admin ui is at /express-pouchdb/_utils
 app.use('/express-pouchdb', require('express-pouchdb')(PouchDB));
 
+// The rest of your app is here
 app.get('/', function(req, res, next) { 
   res.send('Welcome Traveler!  <a href="/express-pouchdb/_utils">Fauxton?</a>');
 });
 
 app.listen(3000);
-
 ```
 
-Now we can run this little guy and find each of `express-pouch`'s routes at the `/express-pouchdb` prefix.
+#### 3) Run your app
 
 ```bash
 $ node app.js &
+```
+
+#### 4) Test it
+Now we can run this little guy.
+
+Your app: http://localhost:3000/
+Pouchdb server API: http://localhost:3000/express-pouchdb/
+Fauxton admin UI: http://localhost:3000/express-pouchdb/_utils_
+
+To interact with the PouchDB server API directly:
+
+```bash
+$ curl http://localhost:3000/express-pouchdb/
+GET / 200 56 - 7 ms
+{
+  "express-pouchdb": "Welcome!",
+  "version": "0.2.0"
+}
 $ curl http://localhost:3000/express-pouchdb/
 GET / 200 56 - 7 ms
 {
@@ -55,7 +82,7 @@ GET / 200 56 - 7 ms
 }
 ```
 
-*Note,* **express-pouchdb** bundles its own JSON parsing middleware which conflicts with 
+*Note for Express 3.0,* **express-pouchdb** bundles its own JSON parsing middleware which conflicts with 
 [`express.bodyParser()`](http://expressjs.com/api.html#bodyParser). Please avoid using `express.bodyParser()`. Rather,
 you can use `express.urlencoded()` and `express.multipart()` alongside the **express-pouchdb** JSON middleware 
 and you should find the results to be the same as you would have expected with `express.bodyParser()`.
