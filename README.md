@@ -69,18 +69,19 @@ $ node app.js &
 To interact with the PouchDB API directly:
 
 ```bash
-$ curl http://localhost:3000/express-pouchdb/
-GET / 200 56 - 7 ms
-{
-  "express-pouchdb": "Welcome!",
-  "version": "0.2.0"
-}
-$ curl http://localhost:3000/express-pouchdb/
-GET / 200 56 - 7 ms
-{
-  "express-pouchdb": "Welcome!",
-  "version": "0.2.0"
-}
+# Version info
+curl http://localhost:3000/express-pouchdb
+{"express-pouchdb":"Welcome!","version":"0.7.1"}
+
+# List db's
+curl http://localhost:3000/express-pouchdb/_all_dbs
+["_replicator","_users"]
+
+# Make a new db
+curl -X PUT  http://localhost:3000/express-pouchdb/newdatabase
+{"ok":true}
+curl http://localhost:3000/express-pouchdb/_all_dbs
+["_replicator","_users","newdatabase"]
 ```
 
 *Note for Express 3.0,* **express-pouchdb** bundles its own JSON parsing middleware which conflicts with 
