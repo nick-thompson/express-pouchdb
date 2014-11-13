@@ -570,6 +570,27 @@ app.post('/_replicate', jsonParser, function (req, res, next) {
   if (req.body.filter) opts.filter = req.body.filter;
   if (req.body.query_params) opts.query_params = req.body.query_params;
 
+  var sourceIsHttp = /^http?:\/\//.test(source);
+  var targetIsHttp = /^http?:\/\//.test(target);
+
+  if (sourceIsHttp && targetIsHttp) {
+    sendError(res, {status: 400, message: "Both source and target were http(s), that is not supported."});
+  }
+
+  if (req.body.proxy) {
+    var ajaxOpt = {ajax: {proxy: req.body.proxy}};
+    if (sourceIsHttp) {
+      source = new PouchDB(source, ajaxOpt);
+    }
+
+    if (targetIsHttp) {
+      target = new PouchDB(target, ajaxOpt);
+    }
+
+    // We already checked to make sure that both source and target aren't http and if
+    // neither is HTTP then we will silently ignore the proxy option.
+  }
+
   var startDate = new Date();
   PouchDB.replicate(source, target, opts).then(function (response) {
     
@@ -580,12 +601,12 @@ app.post('/_replicate', jsonParser, function (req, res, next) {
     
     var currentHistories = [];
     
-    if (!/^https?:\/\//.test(source)) {
+    if (!sourceIsHttp) {
       histories[source] = histories[source] || [];
       currentHistories.push(histories[source]);
 
     }
-    if (!/^https?:\/\//.test(target)) {
+    if (!targetIsHttp) {
       histories[target] = histories[target] || [];
       currentHistories.push(histories[target]);
     }
