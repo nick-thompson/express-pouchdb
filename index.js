@@ -573,10 +573,6 @@ app.post('/_replicate', jsonParser, function (req, res, next) {
   var sourceIsHttp = /^http?:\/\//.test(source);
   var targetIsHttp = /^http?:\/\//.test(target);
 
-  if (sourceIsHttp && targetIsHttp) {
-    sendError(res, {status: 400, message: "Both source and target were http(s), that is not supported."});
-  }
-
   if (req.body.proxy) {
     var ajaxOpt = {ajax: {proxy: req.body.proxy}};
     if (sourceIsHttp) {
@@ -586,9 +582,6 @@ app.post('/_replicate', jsonParser, function (req, res, next) {
     if (targetIsHttp) {
       target = new PouchDB(target, ajaxOpt);
     }
-
-    // We already checked to make sure that both source and target aren't http and if
-    // neither is HTTP then we will silently ignore the proxy option.
   }
 
   var startDate = new Date();
