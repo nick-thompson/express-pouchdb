@@ -437,7 +437,7 @@ app.all('/_db_updates', requiresServerAdmin, function (req, res, next) {
 });
 
 app.get('/_utils', function (req, res, next) {
-  res.sendfile(__dirname + '/fauxton/index.html');
+  res.sendFile(__dirname + '/fauxton/index.html');
 });
 
 function requiresServerAdmin(req, res, next) {
