@@ -24,32 +24,70 @@ $ npm install express-pouchdb
 
 ## Example Usage
 
-Here's a sample Express app, which we'll name `app.js`.
+Here's a sample Express app, 
+
+#### 1) Setup your app
+
+```bash
+npm install express-pouchdb express pouchdb morgan
+```
+
+#### 2) Write your app `app.js`.
 
 ```javascript
 var express = require('express')
   , app     = express()
-  , PouchDB = require('pouchdb');
+  , PouchDB = require('pouchdb')
+  , logger  = require('morgan')
+  ;
 
-app.use(express.logger('tiny'));
-app.use('/db', require('express-pouchdb')(PouchDB));
+app.use(logger('tiny'));
+
+// Load express-pouchdb server at /express-pouchdb
+//   Fauxton Admin ui is at /express-pouchdb/_utils
+app.use('/express-pouchdb', require('express-pouchdb')(PouchDB));
+
+// The rest of your app is here
+app.get('/', function(req, res, next) { 
+  res.send('Welcome Traveler!  <a href="/express-pouchdb/_utils">Fauxton?</a>');
+});
 
 app.listen(3000);
 ```
 
-Now we can run this little guy and find each of `express-pouch`'s routes at the `/db` prefix.
+#### 3) Run your app
+
+Now we can run this little guy.
 
 ```bash
 $ node app.js &
-$ curl http://localhost:3000/db/
-GET / 200 56 - 7 ms
-{
-  "express-pouchdb": "Welcome!",
-  "version": "0.2.0"
-}
 ```
 
-*Note,* **express-pouchdb** bundles its own JSON parsing middleware which conflicts with 
+#### 4) And Test it
+
+  - Your app: [http://localhost:3000/](http://localhost:3000/)
+  - Pouchdb server API: [http://localhost:3000/express-pouchdb/](http://localhost:3000/express-pouchdb/)
+  - Fauxton admin UI: [http://localhost:3000/express-pouchdb/_utils](http://localhost:3000/express-pouchdb/_utils)
+
+To interact with the PouchDB API directly:
+
+```bash
+# Version info
+curl http://localhost:3000/express-pouchdb
+{"express-pouchdb":"Welcome!","version":"0.7.1"}
+
+# List db's
+curl http://localhost:3000/express-pouchdb/_all_dbs
+["_replicator","_users"]
+
+# Make a new db
+curl -X PUT  http://localhost:3000/express-pouchdb/newdatabase
+{"ok":true}
+curl http://localhost:3000/express-pouchdb/_all_dbs
+["_replicator","_users","newdatabase"]
+```
+
+*Note for Express 3.0,* **express-pouchdb** bundles its own JSON parsing middleware which conflicts with 
 [`express.bodyParser()`](http://expressjs.com/api.html#bodyParser). Please avoid using `express.bodyParser()`. Rather,
 you can use `express.urlencoded()` and `express.multipart()` alongside the **express-pouchdb** JSON middleware 
 and you should find the results to be the same as you would have expected with `express.bodyParser()`.
@@ -70,12 +108,12 @@ var express = require('express')
   , app     = express()
   , PouchDB = require('pouchdb');
 
-app.use('/db', require('express-pouchdb')(PouchDB));
+app.use('/express-pouchdb', require('express-pouchdb')(PouchDB));
 
 var myPouch = new PouchDB('foo');
 
 // myPouch is now modifiable in your own code, and it's also
-// available via HTTP at /db/foo
+// available via HTTP at /express-pouchdb/foo
 ```
 
 ### PouchDB defaults
@@ -89,7 +127,7 @@ For instance, if you want to use an in-memory [MemDOWN](https://github.com/rvagg
 ```js
 var InMemPouchDB = PouchDB.defaults({db: require('memdown')});
 
-app.use('/db', require('express-pouchdb')(InMemPouchDB));
+app.use('/express-pouchdb', require('express-pouchdb')(InMemPouchDB));
 
 var myPouch = new InMemPouchDB('foo');
 ```
@@ -99,7 +137,7 @@ Similarly, if you want to place all database files in a folder other than the `p
 ```js
 var TempPouchDB = PouchDB.defaults({prefix: '/tmp/my-temp-pouch/'});
 
-app.use('/db', require('express-pouchdb')(TempPouchDB));
+app.use('/express-pouchdb', require('express-pouchdb')(TempPouchDB));
 
 var myPouch = new TempPouchDB('foo');
 ```
@@ -165,6 +203,12 @@ which that command is based on, directly.
 ### Fauxton
 
 The custom Fauxton theme, with the PouchDB Server name and logo, are kept [in a Fauxton fork](https://github.com/nolanlawson/couchdb-fauxton) for the time being.
+
+While `express-pouchdb` can be loaded at other URL's in your application, the Fauxton admin app [may not work](https://github.com/pouchdb/express-pouchdb/issues/116).
+
+```javascript
+app.use('/some-other-url', require('express-pouchdb')(PouchDB));  // Yeay!  But no Fauxton
+```
 
 ## Contributors
 
