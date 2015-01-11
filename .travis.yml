@@ -7,9 +7,6 @@ node_js:
 git:
   depth: 30
 
-before_install:
-  - "mkdir node_modules; ln -s ../ node_modules/express-pouchdb"
-
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
@@ -19,12 +16,12 @@ before_script:
   - "sudo sed -i 's/^127\\.0\\.0\\.1.*$/127.0.0.1 localhost/' /etc/hosts"
 
   - "cd node_modules/pouchdb && npm install && cd -"
-  - "rm -fr node_modules/pouchdb/node_modules/express-pouchdb"
-  - "ln -s ../../express-pouchdb node_modules/pouchdb/node_modules/express-pouchdb"
+  - "rm -fr node_modules/pouchdb/node_modules/pouchdb-server/node-modules/express-pouchdb"
+  - "ln -s ../../../../.. node_modules/pouchdb/node_modules/pouchdb-server/node-modules/express-pouchdb"
 
   - "cd node_modules/pouchdb-server && npm install && cd -"
   - "rm -fr node_modules/pouchdb-server/node_modules/express-pouchdb"
-  - "ln -s ../../express-pouchdb node_modules/pouchdb-server/node_modules/express-pouchdb"
+  - "ln -s ../../.. node_modules/pouchdb-server/node_modules/express-pouchdb"
 
 script: "npm run $COMMAND"
 
