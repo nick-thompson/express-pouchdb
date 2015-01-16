@@ -14,6 +14,11 @@ before_script:
 
     # Workaround for Selenium #3280 issue
   - "sudo sed -i 's/^127\\.0\\.0\\.1.*$/127.0.0.1 localhost/' /etc/hosts"
+
+  - "cd node_modules/pouchdb && npm install && cd -"
+  - "rm -fr node_modules/pouchdb/node_modules/pouchdb-server/node-modules/express-pouchdb"
+  - "ln -s ../../../../.. node_modules/pouchdb/node_modules/pouchdb-server/node-modules/express-pouchdb"
+
   - "cd node_modules/pouchdb-server && npm install && cd -"
   - "rm -fr node_modules/pouchdb-server/node_modules/express-pouchdb"
   - "ln -s ../../.. node_modules/pouchdb-server/node_modules/express-pouchdb"
@@ -30,6 +35,7 @@ env:
   - COMMAND=jshint
   - COMMAND=test-express-pouchdb
   - CLIENT=node COMMAND=test-pouchdb
+  - CLIENT=node COMMAND=test-pouchdb-minimum
 
   # Test in firefox/phantomjs running on travis
   - CLIENT=selenium:firefox COMMAND=test-pouchdb
