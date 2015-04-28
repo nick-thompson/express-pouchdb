@@ -83,18 +83,10 @@ function testWelcome(app, done, path) {
 }
 
 describe('config', function () {
-  it('should have ./config.json as default config path', function (done) {
-    fse.exists('./config.json', function (exists) {
-      if (!exists) {
-        return done(new Error("config.json doesn't exist!"));
-      }
-      done();
-    });
-  });
-  it('should support setting a different config path', function (done) {
+  it('should not create empty config file', function (done) {
     fse.exists(TEST_DATA + 'b-config.json', function (exists) {
-      if (!exists) {
-        return done(new Error("b-config.json doesn't exist!"));
+      if (exists) {
+        return done(new Error("b-config.json should not have been created!"));
       }
       done();
     });
