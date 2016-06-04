@@ -1,2 +1,11 @@
 node_modules
 test/testdata
+.idea/
+config.json
+log.txt
+*.ldb
+*.log
+CURRENT
+LOCK
+LOG
+MANIFEST-*
