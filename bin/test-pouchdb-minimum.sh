@@ -3,7 +3,7 @@
 node ./bin/express-pouchdb-minimum-for-pouchdb.js &
 POUCHDB_SERVER_PID=$!
 
-cd ./node_modules/pouchdb
+cd ./node_modules/pouchdbclone
 
 COUCH_HOST=http://127.0.0.1:6984 npm test
 
