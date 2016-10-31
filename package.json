@@ -48,7 +48,7 @@
     "pouchdb": "^6.0.4",
     "pouchdb-node": "^6.0.4",
     "pouchdb-server": "~1.2.0",
-    "supertest": "2.0.0"
+    "supertest": "2.0.1"
   },
   "scripts": {
     "jshint": "jshint -c .jshintrc lib test",
